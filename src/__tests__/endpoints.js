@@ -1,0 +1,18 @@
+export default {
+  apiGateway: 'http://localhost:4567',
+  kinesis: 'http://localhost:4568',
+  dynamoDB: 'http://localhost:4569',
+  dynamoDBStreams: 'http://localhost:4570',
+  elasticsearch: 'http://localhost:4571',
+  s3: 'http://localhost:4572',
+  firehose: 'http://localhost:4573',
+  lambda: 'http://localhost:4574',
+  sns: 'http://localhost:4575',
+  sqs: 'http://localhost:4576',
+  redshift: 'http://localhost:4577',
+  elasticsearchService: 'http://localhost:4578',
+  ses: 'http://localhost:4579',
+  route53: 'http://localhost:4580',
+  cloudFormation: 'http://localhost:4581',
+  cloudWatch: 'http://localhost:4582',
+};
