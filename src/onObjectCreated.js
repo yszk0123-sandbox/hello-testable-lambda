@@ -35,7 +35,7 @@ module.exports = function({ s3, event, callback }) {
   }
   var imageType = typeMatch[1];
   if (imageType != 'jpg' && imageType != 'png') {
-    callback('Unsupported image type: ${imageType}');
+    callback(`Unsupported image type: ${imageType}`);
     return;
   }
 
