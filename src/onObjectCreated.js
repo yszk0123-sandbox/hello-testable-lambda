@@ -1,11 +1,10 @@
-// dependencies
-var async = require('async');
-var gm = require('gm').subClass({ imageMagick: true }); // Enable ImageMagick integration.
-var util = require('util');
+import async from 'async';
+const gm = require('gm').subClass({ imageMagick: true }); // Enable ImageMagick integration.
+import util from 'util';
 
 // constants
-var MAX_WIDTH = 100;
-var MAX_HEIGHT = 100;
+const MAX_WIDTH = 100;
+const MAX_HEIGHT = 100;
 
 module.exports = function({ s3, event, callback }) {
   // Read options from the event.
@@ -13,13 +12,13 @@ module.exports = function({ s3, event, callback }) {
     'Reading options from event:\n',
     util.inspect(event, { depth: 5 }),
   );
-  var srcBucket = event.Records[0].s3.bucket.name;
+  const srcBucket = event.Records[0].s3.bucket.name;
   // Object key may have spaces or unicode non-ASCII characters.
-  var srcKey = decodeURIComponent(
+  const srcKey = decodeURIComponent(
     event.Records[0].s3.object.key.replace(/\+/g, ' '),
   );
-  var dstBucket = srcBucket + 'resized';
-  var dstKey = 'resized-' + srcKey;
+  const dstBucket = srcBucket + 'resized';
+  const dstKey = 'resized-' + srcKey;
 
   // Sanity check: validate that source and destination are different buckets.
   if (srcBucket == dstBucket) {
@@ -28,12 +27,12 @@ module.exports = function({ s3, event, callback }) {
   }
 
   // Infer the image type.
-  var typeMatch = srcKey.match(/\.([^.]*)$/);
+  const typeMatch = srcKey.match(/\.([^.]*)$/);
   if (!typeMatch) {
     callback('Could not determine the image type.');
     return;
   }
-  var imageType = typeMatch[1];
+  const imageType = typeMatch[1];
   if (imageType != 'jpg' && imageType != 'png') {
     callback(`Unsupported image type: ${imageType}`);
     return;
@@ -55,12 +54,12 @@ module.exports = function({ s3, event, callback }) {
       function transform(response, next) {
         gm(response.Body).size(function(err, size) {
           // Infer the scaling factor to avoid stretching the image unnaturally.
-          var scalingFactor = Math.min(
+          const scalingFactor = Math.min(
             MAX_WIDTH / size.width,
             MAX_HEIGHT / size.height,
           );
-          var width = scalingFactor * size.width;
-          var height = scalingFactor * size.height;
+          const width = scalingFactor * size.width;
+          const height = scalingFactor * size.height;
 
           // Transform the image buffer in memory.
           this.resize(width, height).toBuffer(imageType, function(err, buffer) {
