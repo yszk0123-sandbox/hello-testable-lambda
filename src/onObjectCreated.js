@@ -16,5 +16,17 @@ module.exports = async function({ s3, event, callback }) {
   const dstBucket = srcBucket + 'resized';
   const dstKey = 'resized-' + srcKey;
 
-  resize({ s3, gm, srcBucket, srcKey, dstBucket, dstKey, callback });
+  try {
+    const message = await resize({
+      s3,
+      gm,
+      srcBucket,
+      srcKey,
+      dstBucket,
+      dstKey,
+    });
+    callback(null, message);
+  } catch (error) {
+    callback(error);
+  }
 };
