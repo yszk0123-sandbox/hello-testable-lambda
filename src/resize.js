@@ -26,21 +26,23 @@ export default async function resize({
     throw `Unsupported image type: ${imageType}`;
   }
 
+  function download(next) {
+    // Download the image from S3 into a buffer.
+    return s3
+      .getObject({
+        Bucket: srcBucket,
+        Key: srcKey,
+      })
+      .promise();
+  }
+
+  const response = await download();
+
   return new Promise((resolve, reject) => {
     // Download the image from S3, transform, and upload to a different S3 bucket.
     async.waterfall(
       [
-        function download(next) {
-          // Download the image from S3 into a buffer.
-          s3.getObject(
-            {
-              Bucket: srcBucket,
-              Key: srcKey,
-            },
-            next,
-          );
-        },
-        function transform(response, next) {
+        function transform(next) {
           gm(response.Body).size(function(err, size) {
             // Infer the scaling factor to avoid stretching the image unnaturally.
             const scalingFactor = Math.min(
