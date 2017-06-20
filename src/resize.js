@@ -3,7 +3,7 @@ import async from 'async';
 const MAX_WIDTH = 100;
 const MAX_HEIGHT = 100;
 
-export default function resize({
+export default async function resize({
   s3,
   gm,
   srcBucket,
@@ -11,25 +11,22 @@ export default function resize({
   dstBucket,
   dstKey,
 }) {
+  // Sanity check: validate that source and destination are different buckets.
+  if (srcBucket == dstBucket) {
+    throw 'Source and destination buckets are the same.';
+  }
+
+  // Infer the image type.
+  const typeMatch = srcKey.match(/\.([^.]*)$/);
+  if (!typeMatch) {
+    throw 'Could not determine the image type.';
+  }
+  const imageType = typeMatch[1];
+  if (imageType != 'jpg' && imageType != 'png') {
+    throw `Unsupported image type: ${imageType}`;
+  }
+
   return new Promise((resolve, reject) => {
-    // Sanity check: validate that source and destination are different buckets.
-    if (srcBucket == dstBucket) {
-      reject('Source and destination buckets are the same.');
-      return;
-    }
-
-    // Infer the image type.
-    const typeMatch = srcKey.match(/\.([^.]*)$/);
-    if (!typeMatch) {
-      reject('Could not determine the image type.');
-      return;
-    }
-    const imageType = typeMatch[1];
-    if (imageType != 'jpg' && imageType != 'png') {
-      reject(`Unsupported image type: ${imageType}`);
-      return;
-    }
-
     // Download the image from S3, transform, and upload to a different S3 bucket.
     async.waterfall(
       [
